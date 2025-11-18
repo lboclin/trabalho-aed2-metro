@@ -1,0 +1,14 @@
+# Ignorar arquivos do sistema Mac
+.DS_Store
+
+# Ignorar executáveis e objetos de C++
+*.o
+*.out
+*.exe
+bin/
+
+# Ignorar configurações locais do VS Code (cada um usa a sua)
+.vscode/
+
+# Ignorar o arquivo CSV se for muito grande (opcional, mas boa prática)
+# dados/*.csv
