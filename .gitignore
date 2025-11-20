@@ -7,8 +7,10 @@
 *.exe
 bin/
 
-# Ignorar configurações locais do VS Code (cada um usa a sua)
-.vscode/
+# Ignorar executáveis e objetos de Python
+__pycache__/
+*.pyc
 
-# Ignorar o arquivo CSV se for muito grande (opcional, mas boa prática)
-# dados/*.csv
+# Ignorar configurações locais do VS Code
+.vscode/
+.venv/
