@@ -122,12 +122,18 @@ void NetworkAnalyzer::runAnalysis(const vector<int>& k_values) {
     
     cout << "Custo Base: " << fixed << setprecision(2) << mstTotalKm << " km de tuneis.\n" << endl;
 
+    // Garante que a pasta existe
     system("mkdir -p arquivos_relacionados/saidas_cpp");
+
+    string summaryPath = "arquivos_relacionados/resumo_metricas.csv";
+    ofstream summaryFile(summaryPath);
+    summaryFile << "K,Custo_Bilhoes,Eficiencia_Km_Viagem\n"; 
 
     for (int k : k_values) {
         existingEdges.clear();
         Graph g(stations.size());
 
+        // Reconstrói a Base (MST)
         for (const auto& e : mstEdges) {
             g.addEdge(e.u, e.v, e.weight);
             existingEdges.insert({min(e.u, e.v), max(e.u, e.v)});
@@ -136,16 +142,21 @@ void NetworkAnalyzer::runAnalysis(const vector<int>& k_values) {
         double extraKm = addKNearestEdges(g, k);
         double totalKm = mstTotalKm + extraKm;
         
-        // Custo: Vamos assumir $200 Milhões por Km
-        double totalCost = totalKm * 200.0; 
+        // Custo: $200 Milhões por Km
+        double totalCostBillions = (totalKm * 200.0) / 1000.0; 
         
         cout << "Analisando K=" << k << "..." << endl;
         double avgPath = g.calculateAveragePath();
         
-        cout << "   | Custo Total: $" << (totalCost/1000.0) << " Bilhoes (" << totalKm << " km)" << endl;
+        cout << "   | Custo Total: $" << totalCostBillions << " Bilhoes (" << totalKm << " km)" << endl;
         cout << "   | Tempo Medio (Eficiencia): " << avgPath << " km / viagem" << endl;
+
+        summaryFile << k << "," << totalCostBillions << "," << avgPath << "\n";
 
         exportGraphToCSV(g, k, "arquivos_relacionados/saidas_cpp");
         cout << "--------------------------------------------" << endl;
     }
+
+    summaryFile.close();
+    cout << "Resumo das metricas salvo em: " << summaryPath << endl;
 }
