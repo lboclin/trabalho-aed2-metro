@@ -3,6 +3,7 @@
 
 #include "Station.h"
 
+// Funcao que retorna, em km, a distância entre duas estacoes
 double haversine(const Station& A, const Station& B);
 
 #endif // UTILS_H
