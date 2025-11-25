@@ -71,46 +71,38 @@ double NetworkAnalyzer::addKNearestEdges(Graph& g, int k) {
     return extraCostKm;
 }
 
-void NetworkAnalyzer::exportGraphToCSV(const Graph& g, int k, string folderPath) {
-    string filename = folderPath + "/grafo_visual_k" + to_string(k) + ".csv";
+void NetworkAnalyzer::exportGraphToCSV(const Graph& g, string suffix, string folderPath) {
+    string filename = folderPath + "/grafo_visual_" + suffix + ".csv";
     ofstream file(filename);
 
-    if (!file.is_open()) {
-        cerr << "Erro ao criar arquivo de visualizacao: " << filename << endl;
-        return;
-    }
+    if (!file.is_open()) return;
 
     file << "lat1,lon1,lat2,lon2,weight,type\n";
 
+    // Cria checklist da MST
     set<pair<int, int>> mstLookup;
-    for (const auto& e : mstEdges) {
-        mstLookup.insert({min(e.u, e.v), max(e.u, e.v)});
-    }
+    for (const auto& e : mstEdges) mstLookup.insert({min(e.u, e.v), max(e.u, e.v)});
 
     for (const auto& edge : existingEdges) {
         int u = edge.first;
         int v = edge.second;
-        
         const Station& s1 = stations[u];
         const Station& s2 = stations[v];
         double dist = haversine(s1, s2);
 
-        string type;
-        
-        if (mstLookup.find({u, v}) != mstLookup.end()) {
-            type = "MST"; 
-        } else {
-            type = "New_Connection";
-        }
+        string type = (mstLookup.count({u, v})) ? "MST" : "New_Connection";
         
         file << fixed << setprecision(6) 
              << s1.lat << "," << s1.lon << "," 
              << s2.lat << "," << s2.lon << "," 
              << dist << "," << type << "\n";
     }
-
     file.close();
-    cout << "   -> Visualizacao salva em: " << filename << endl;
+    // cout << "   -> Visualizacao salva: " << filename << endl;
+}
+
+void NetworkAnalyzer::exportGraphToCSV(const Graph& g, int k, string folderPath) {
+    exportGraphToCSV(g, "k" + to_string(k), folderPath);
 }
 
 void NetworkAnalyzer::runAnalysis(const vector<int>& k_values) {
@@ -125,7 +117,7 @@ void NetworkAnalyzer::runAnalysis(const vector<int>& k_values) {
     // Garante que a pasta existe
     system("mkdir -p arquivos_relacionados/saidas_cpp");
 
-    string summaryPath = "arquivos_relacionados/resumo_metricas.csv";
+    string summaryPath = "arquivos_relacionados/resumo_metricas_k.csv";
     ofstream summaryFile(summaryPath);
     summaryFile << "K,Custo_Bilhoes,Eficiencia_Km_Viagem\n"; 
 
@@ -159,4 +151,56 @@ void NetworkAnalyzer::runAnalysis(const vector<int>& k_values) {
 
     summaryFile.close();
     cout << "Resumo das metricas salvo em: " << summaryPath << endl;
+}
+
+void NetworkAnalyzer::runSmartAnalysis(const vector<double>& factors) {
+    cout << "\n=== INICIANDO BATERIA DE TESTES SMART (X) ===" << endl;
+    
+    string csvPath = "arquivos_relacionados/resumo_metricas_x.csv";
+    ofstream xFile(csvPath);
+    xFile << "Fator,Custo_Bilhoes,Eficiencia_Km_Viagem\n";
+
+    for (double factor : factors) {
+        cout << "Testando Fator de Alongamento: " << factor << "x ..." << endl;
+
+        // Limpeza e MST Base
+        existingEdges.clear();
+        Graph g(stations.size());
+        
+        double mstCost = 0;
+        for (const auto& e : mstEdges) {
+            g.addEdge(e.u, e.v, e.weight);
+            existingEdges.insert({min(e.u, e.v), max(e.u, e.v)});
+            mstCost += e.weight;
+        }
+
+        // Roda o algoritmo pesado
+        vector<Edge> smartEdges = g.optimizeByStretchFactor(stations, factor);
+
+        // Atualiza visualização
+        double extraKm = 0;
+        for (const auto& e : smartEdges) {
+            existingEdges.insert({min(e.u, e.v), max(e.u, e.v)});
+            extraKm += e.weight;
+        }
+
+        // Métricas
+        double totalKm = mstCost + extraKm;
+        double totalCostB = (totalKm * 200.0) / 1000.0;
+        double avgPath = g.calculateAveragePath();
+
+        cout << "   | Novos Tuneis: " << smartEdges.size() 
+             << " | Custo: $" << totalCostB << "B" 
+             << " | Efic.: " << avgPath << "km" << endl;
+
+        // Salva no CSV específico
+        xFile << factor << "," << totalCostB << "," << avgPath << "\n";
+
+        string label = "smart_" + to_string(factor).substr(0, 3); 
+        exportGraphToCSV(g, label, "arquivos_relacionados/saidas_cpp");
+    }
+
+    xFile.close();
+    cout << "Resumo Smart salvo em: " << csvPath << endl;
+    cout << "--------------------------------------------" << endl;
 }

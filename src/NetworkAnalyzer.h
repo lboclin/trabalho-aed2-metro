@@ -18,6 +18,7 @@ class NetworkAnalyzer {
 
         // Exporta o grafo em csv para facilitar no plot
         void exportGraphToCSV(const Graph& g, int k, std::string folderPath);
+        void exportGraphToCSV(const Graph& g, std::string suffix, std::string folderPath);
     
     public:
         NetworkAnalyzer();
@@ -27,6 +28,8 @@ class NetworkAnalyzer {
 
         // Roda todos os codigos para a analise
         void runAnalysis(const std::vector<int>& k_values);
+
+        void runSmartAnalysis(const std::vector<double>& factors);
 };
 
 #endif // NETWORK_ANALYZER_H

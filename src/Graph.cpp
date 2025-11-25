@@ -101,3 +101,32 @@ double Graph::calculateAveragePath() {
     
     return totalDistanceSum / validPathsCount;
 }
+
+std::vector<Edge> Graph::optimizeByStretchFactor(const std::vector<Station>& stations, double factor) {
+    std::vector<Edge> newEdges;
+    double inf = std::numeric_limits<double>::infinity();
+    int edgesCount = 0;
+
+    std::cout << "   [Smart Algo] Iniciando otimizacao com Recalculo Dinamico (Fator " << factor << "x)..." << std::endl;
+
+    for (int u = 0; u < numNodes; ++u) {
+        std::vector<double> dists = dijkstra(u);
+
+        for (int v = u + 1; v < numNodes; ++v) {
+            
+            double realDist = haversine(stations[u], stations[v]);
+            double currentNetworkDist = dists[v];
+
+            if (currentNetworkDist == inf || currentNetworkDist > (realDist * factor)) {
+                addEdge(u, v, realDist);
+                newEdges.push_back({u, v, realDist});
+                edgesCount++;
+                dists = dijkstra(u); 
+            }
+        }
+        
+        // if (u % 50 == 0) std::cout << "     -> Analisado no " << u << " (" << edgesCount << " tuneis criados ate agora)..." << std::endl;
+    }
+
+    return newEdges;
+}

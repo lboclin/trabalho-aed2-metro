@@ -35,6 +35,9 @@ class Graph {
 
         // Metrica: calcula distancia media entre 2 pontos quaisquer do grafo
         double calculateAveragePath();
+
+        // Calcula o caminho otimizado com Spanner Geométrico
+        std::vector<Edge> optimizeByStretchFactor(const std::vector<Station>& stations, double factor);
 };
 
 

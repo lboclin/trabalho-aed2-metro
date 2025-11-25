@@ -104,7 +104,7 @@ A organização segue o padrão TAD (Tipo Abstrato de Dados) para garantir modul
 ## 👥 Autores (Grupo F)
 
 * **LUCAS BOCLIN** - *202401803*
-* **MURILO HONORATO** - *Matrícula*
+* **MURILO HONORATO** - *202401814*
 * **RAFAEL AUGUSTO** - *202401823*
 
 ---
