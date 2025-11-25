@@ -59,13 +59,16 @@ O núcleo do projeto foi desenvolvido em **C++ Moderno (C++17)** visando alta pe
     ```
 
 4.  **Interação:**
-    O programa solicitará quantos e depois quais cenários você deseja analisar.
+    O programa solicitará quantos e depois quais cenários você deseja analisar de cada algoritmo (K-neighbors e Smart-factor).
     * Exemplo de entrada:
     ```
     5
     0 1 2 3 5
+    5
+    1.2 1.5 2 3 5
     ```
     * Isso testará a rede apenas com MST (0), MST + 1 vizinho, MST + 2 vizinhos, etc.
+    * E depois MST + t-spanner otimizado para cada t que você colocou, que nesse caso foi chamado de x.
 
 5.  **Limpeza:**
     Para remover os arquivos compilados (`.o` e executável):
