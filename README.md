@@ -98,9 +98,36 @@ Estes arquivos podem ser visualizados utilizando os scripts Python disponíveis 
 
 ---
 
+
+
 ## 📂 Estrutura do Projeto
 
 A organização segue o padrão TAD (Tipo Abstrato de Dados) para garantir modularidade.
+
+---
+
+## 📈 Resultados e Discussão
+
+### 1. Impacto do K-Nearest Neighbors
+Análise de como conectar cada estação aos seus K vizinhos mais próximos afeta o custo e a eficiência.
+
+<img src="arquivos_relacionados/plots/grafico_metrics_k.png" width="600">
+
+*Exemplo da malha com K=2:*
+
+<img src="arquivos_relacionados/plots/temp_frames_k/frame_k2.png" width="500">
+
+### 2. Eficiência do Algoritmo Inteligente (Smart-Factor)
+Análise do algoritmo que cria atalhos apenas quando a rota atual excede um fator X da distância geográfica.
+
+<img src="arquivos_relacionados/plots/grafico_metrics_x.png" width="600">
+
+*Exemplo da malha com Fator=1.5x:*
+
+<img src="arquivos_relacionados/plots/temp_frames_x/frame_004.png" width="500">
+
+### 3. Conclusão
+Apesar da MST apresentar o custo mínimo, o algoritmo Smart Factor é a escolha ideal: ele aumenta significativamente a eficiência da rede por um custo baixo. Além disso, demonstrou ser superior à abordagem bruta do KNN, entregando tempos de viagem menores com um custo de construção muito mais acessível.
 
 ---
 
